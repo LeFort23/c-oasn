@@ -32,6 +32,32 @@ html, body {
     font-family: 'Share Tech Mono', monospace;
 }
 
+/* Background room — hidden until gate dismissed */
+#bg {
+    position: fixed;
+    inset: 0;
+    background: url("bg.jpg") center center / cover no-repeat;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 2.5s ease;
+    filter: brightness(0.45) saturate(0.6) contrast(1.1);
+}
+#bg.visible { opacity: 1; }
+
+/* Dark overlay so content stays readable over bg */
+#bg-overlay {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.75) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 2.5s ease;
+    pointer-events: none;
+}
+#bg-overlay.visible { opacity: 1; }
+
 ::-webkit-scrollbar { display: none; }
 
 /* === CURSOR === */
@@ -268,8 +294,8 @@ header {
     font-size: 38px;
     font-weight: 900;
     letter-spacing: 6px;
-    color: #aaa;
-    text-shadow: 0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.1), 2px 2px 0 #000;
+    color: #e8e8e8;
+    text-shadow: 0 0 2px #000, 0 0 20px rgba(255,255,255,0.5), 2px 2px 8px rgba(0,0,0,0.9), 0 0 60px rgba(255,255,255,0.15);
     animation: titleGlitch 8s steps(1) infinite;
     text-transform: uppercase;
 }
@@ -304,8 +330,9 @@ header {
     font-style: italic;
     font-size: 11px;
     letter-spacing: 4px;
-    color: #2a1a1a;
+    color: #bbb;
     margin-top: 10px;
+    text-shadow: 0 0 8px rgba(0,0,0,1), 1px 1px 4px #000;
     animation: subtitlePulse 6s ease-in-out infinite;
 }
 @keyframes subtitlePulse {
@@ -318,10 +345,11 @@ header::after {
     content: "— ✦ —";
     display: block;
     font-size: 12px;
-    color: #333;
+    color: #888;
     letter-spacing: 8px;
     margin-top: 16px;
-    opacity: 0.6;
+    opacity: 0.8;
+    text-shadow: 0 0 6px rgba(0,0,0,1);
 }
 
 /* === TOP LINKS === */
@@ -337,12 +365,13 @@ header::after {
 }
 .topLinks a {
     display: block;
-    color: #888;
+    color: #ccc;
     text-decoration: none;
     margin-bottom: 16px;
     transition: all 0.4s ease;
     position: relative;
     padding: 4px 0;
+    text-shadow: 0 0 8px rgba(0,0,0,1), 1px 1px 6px #000;
 }
 .topLinks a::before {
     content: "▸ ";
@@ -419,9 +448,10 @@ header::after {
     margin-top: 8px;
     font-size: 7px;
     letter-spacing: 2px;
-    color: #444;
+    color: #999;
     transition: 0.4s;
     font-family: 'Share Tech Mono', monospace;
+    text-shadow: 0 0 6px rgba(0,0,0,1);
 }
 .tile:hover .name {
     color: #ddd;
@@ -652,6 +682,10 @@ header::after {
 </style>
 </head>
 <body>
+
+<!-- Background -->
+<div id="bg"></div>
+<div id="bg-overlay"></div>
 
 <!-- Custom cursor -->
 <div id="cursor"></div>
@@ -892,6 +926,10 @@ document.getElementById("modalBackdrop").addEventListener("click", closePop);
 document.getElementById("enterText").addEventListener("click", e => {
     e.stopPropagation();
     document.getElementById("enterGate").classList.add("fadeOut");
+    setTimeout(() => {
+        document.getElementById("bg").classList.add("visible");
+        document.getElementById("bg-overlay").classList.add("visible");
+    }, 300);
     const audio = document.getElementById("ambience");
     audio.volume = 0;
     audio.play().then(()=>{
