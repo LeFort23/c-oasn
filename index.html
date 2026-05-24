@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ℭ-oas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+    user-select: none; cursor: none !important;
+}
+
+:root {
+    --blood: #6b0000;
+    --deep-blood: #3a0000;
+    --ash: #b0a090;
+    --bone: #d4c9b8;
+    --void: #000000;
+    --fog: #1a1510;
+    --rot: #2a1f10;
+    --glow-red: rgba(107, 0, 0, 0.6);
+    --glow-amber: rgba(180, 100, 20, 0.3);
+}
+
+html, body {
+    height: 100%;
+    background: #000;
+    color: var(--ash);
+    overflow-x: hidden;
+    scrollbar-width: none;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+::-webkit-scrollbar { display: none; }
+
+/* === CURSOR === */
+#cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    border: 1px solid var(--blood);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+}
+#cursor-dot {
+    position: fixed;
+    width: 3px; height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+}
+
+/* === NOISE OVERLAY === */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    opacity: 0.04;
+    z-index: 9998;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: noiseShift 0.5s steps(1) infinite;
+}
+
+@keyframes noiseShift {
+    0%   { background-position: 0 0; }
+    25%  { background-position: -50px 20px; }
+    50%  { background-position: 30px -40px; }
+    75%  { background-position: -20px 50px; }
+    100% { background-position: 0 0; }
+}
+
+/* Vignette */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+    z-index: 9997;
+    pointer-events: none;
+}
+
+/* === SCANLINES === */
+#scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 9996;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
+    );
+    animation: scanMove 8s linear infinite;
+}
+@keyframes scanMove {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 100px; }
+}
+
+/* === BLOOD DRIP TOP === */
+#drips {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    z-index: 9995;
+    pointer-events: none;
+    display: flex;
+    gap: 0;
+}
+.drip {
+    flex: 1;
+    position: relative;
+}
+.drip::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    background: linear-gradient(to bottom, var(--blood), transparent);
+    animation: dripDown var(--dur) var(--delay) ease-in infinite;
+}
+@keyframes dripDown {
+    0%   { height: 0; opacity: 0; }
+    10%  { opacity: 1; }
+    60%  { height: var(--h); opacity: 1; }
+    100% { height: var(--h); opacity: 0; }
+}
+
+/* === ENTER GATE === */
+#enterGate {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 50000;
+    gap: 20px;
+}
+
+.gate-sigil {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 64px;
+    color: var(--blood);
+    text-shadow: 0 0 40px var(--glow-red), 0 0 80px rgba(107,0,0,0.3);
+    animation: sigilPulse 4s ease-in-out infinite;
+    line-height: 1;
+}
+@keyframes sigilPulse {
+    0%,100% { opacity: 0.4; text-shadow: 0 0 20px var(--glow-red); transform: scale(1); }
+    50% { opacity: 1; text-shadow: 0 0 60px var(--glow-red), 0 0 100px rgba(107,0,0,0.4); transform: scale(1.03); }
+}
+
+#enterText {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 8px;
+    color: #333;
+    animation: textPulse 3s ease-in-out infinite;
+    transition: all 0.5s ease;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border: 1px solid #1a0000;
+    position: relative;
+    overflow: hidden;
+}
+#enterText::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--blood);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: -1;
+}
+#enterText:hover::before { transform: scaleX(1); }
+#enterText:hover { color: #fff; border-color: var(--blood); letter-spacing: 10px; }
+@keyframes textPulse { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+
+.gate-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: #2a0000;
+    letter-spacing: 3px;
+    animation: textPulse 5s ease-in-out infinite 1s;
+}
+
+.fadeOut { animation: gateFade 2s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes gateFade { to { opacity:0; visibility:hidden; pointer-events:none; } }
+
+/* === MASCOT (DANGLING FIGURE) === */
+#mascot-wrap {
+    position: fixed;
+    top: 0;
+    right: 10%;
+    width: 260px;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* The rope anchor line from top of screen */
+#mascot-wrap::before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 0px; /* no extra rope needed, image has rope built in */
+    background: transparent;
+}
+
+#mascot {
+    width: 220px;
+    height: auto;
+    display: block;
+    opacity: 0.55;
+    filter: brightness(0.9) contrast(1.1);
+    transform-origin: top center;
+    animation: dangle 3.2s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+    /* subtle flicker */
+    will-change: transform;
+}
+
+@keyframes dangle {
+    0%   { transform: rotate(-6deg); }
+    25%  { transform: rotate(-3deg); }
+    50%  { transform: rotate(0deg); }
+    75%  { transform: rotate(3deg); }
+    100% { transform: rotate(6deg); }
+}
+
+/* Occasional creak — slightly faster swing burst */
+#mascot.creak {
+    animation: dangle-creak 0.4s ease-in-out 3;
+}
+@keyframes dangle-creak {
+    0%   { transform: rotate(-9deg); }
+    50%  { transform: rotate(9deg); }
+    100% { transform: rotate(-9deg); }
+}
+
+/* Red shadow pool beneath */
+#mascot-shadow {
+    position: fixed;
+    bottom: 0;
+    right: 10%;
+    width: 220px;
+    height: 60px;
+    background: radial-gradient(ellipse at center, rgba(80,0,0,0.35) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 5;
+    animation: shadowPulse 3.2s ease-in-out infinite alternate;
+    transform-origin: center;
+}
+@keyframes shadowPulse {
+    0%   { transform: scaleX(0.85); opacity: 0.5; }
+    100% { transform: scaleX(1.1);  opacity: 0.9; }
+}
+
+/* === HEADER === */
+header {
+    text-align: center;
+    padding: 60px 0 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #4a0000;
+    text-shadow: 0 0 30px rgba(107,0,0,0.8), 0 0 60px rgba(107,0,0,0.3), 2px 2px 0 #000;
+    animation: titleGlitch 8s steps(1) infinite;
+    text-transform: uppercase;
+}
+@keyframes titleGlitch {
+    0%,92%,100% {
+        text-shadow: 0 0 30px rgba(107,0,0,0.8), 0 0 60px rgba(107,0,0,0.3);
+        transform: none;
+        filter: none;
+    }
+    93% {
+        text-shadow: -2px 0 #f00, 2px 0 #00f;
+        transform: translateX(-2px);
+        filter: blur(0.5px);
+    }
+    94% {
+        text-shadow: 2px 0 #f00, -2px 0 #0f0;
+        transform: translateX(2px);
+    }
+    95% {
+        transform: none;
+        text-shadow: 0 0 30px rgba(107,0,0,0.8);
+    }
+    96% {
+        transform: translateX(-1px) skewX(-5deg);
+        filter: blur(1px);
+    }
+    97% { transform: none; filter: none; }
+}
+
+.subtitle {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #2a1a1a;
+    margin-top: 10px;
+    animation: subtitlePulse 6s ease-in-out infinite;
+}
+@keyframes subtitlePulse {
+    0%,100%{ opacity: 0.4; }
+    50%{ opacity: 0.9; color: #5a3030; }
+}
+
+/* decorative line */
+header::after {
+    content: "— ✦ —";
+    display: block;
+    font-size: 12px;
+    color: #2a0000;
+    letter-spacing: 8px;
+    margin-top: 16px;
+    opacity: 0.6;
+}
+
+/* === TOP LINKS === */
+.topLinks {
+    position: fixed;
+    top: 28px; right: 32px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-align: right;
+    z-index: 200;
+}
+.topLinks a {
+    display: block;
+    color: #3a2020;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: all 0.4s ease;
+    position: relative;
+}
+.topLinks a::before {
+    content: "▸ ";
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: var(--blood);
+}
+.topLinks a:hover::before { opacity: 1; }
+.topLinks a:hover {
+    color: #cc2200;
+    text-shadow: 0 0 10px rgba(200,30,0,0.5);
+    letter-spacing: 4px;
+}
+
+/* === LAYOUT + ROSTER === */
+.layout {
+    padding: 30px 50px 60px;
+    display: flex;
+    position: relative;
+    z-index: 10;
+}
+
+.rosterGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 80px);
+    gap: 30px 25px;
+}
+
+.tile {
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+}
+.tile:hover { transform: translateY(-4px) scale(0.95); }
+
+.pfp {
+    width: 65px; height: 65px;
+    border: 1px solid #1a0000;
+    background: #000;
+    filter: grayscale(100%) brightness(0.5) contrast(1.2);
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+.pfp img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: all 0.5s ease;
+}
+/* Red glow on hover */
+.tile:hover .pfp {
+    border-color: var(--blood);
+    filter: grayscale(80%) brightness(0.9) contrast(1.1) sepia(30%);
+    box-shadow: 0 0 20px rgba(107,0,0,0.7), 0 0 40px rgba(107,0,0,0.3);
+}
+
+/* scratch effect over pfp */
+.pfp::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.15) 3px,
+        rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+}
+
+.name {
+    margin-top: 8px;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: #2a1515;
+    transition: 0.4s;
+    font-family: 'Share Tech Mono', monospace;
+}
+.tile:hover .name {
+    color: #cc3300;
+    text-shadow: 0 0 8px rgba(180,30,0,0.4);
+}
+
+/* === MODAL === */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+}
+.modal.open { visibility: visible; pointer-events: auto; }
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(6px) sepia(30%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.modal.open .backdrop { opacity: 1; }
+
+.card {
+    position: relative;
+    width: 560px;
+    background: #030000;
+    border: 1px solid #2a0000;
+    display: flex;
+    min-height: 280px;
+    opacity: 0;
+    transform: scale(0.93) translateY(20px);
+    transition: all 0.6s cubic-bezier(0.19,1,0.22,1);
+    box-shadow: 0 0 60px rgba(107,0,0,0.4), 0 30px 60px rgba(0,0,0,0.98), inset 0 0 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+.modal.open .card { opacity: 1; transform: scale(1) translateY(0); }
+
+/* top blood drip inside card */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--blood), var(--deep-blood), var(--blood), transparent);
+    z-index: 5;
+    animation: redLinePulse 3s ease-in-out infinite;
+}
+@keyframes redLinePulse {
+    0%,100%{ opacity: 0.4; }
+    50%{ opacity: 1; box-shadow: 0 0 10px var(--blood); }
+}
+
+.cardSidebar {
+    width: 190px;
+    padding: 35px 25px;
+    border-right: 1px solid #1a0000;
+    display: flex;
+    flex-direction: column;
+    background: #020000;
+    align-items: center;
+    position: relative;
+}
+.cardSidebar::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(60,0,0,0.1), transparent);
+    pointer-events: none;
+}
+
+.pfpBig {
+    width: 120px; height: 120px;
+    margin-bottom: 18px;
+    border: 1px solid #2a0000;
+    background: #000;
+    filter: grayscale(90%) brightness(0.65) contrast(1.2);
+    box-shadow: 0 0 25px rgba(107,0,0,0.3);
+    transition: filter 0.5s ease;
+    overflow: hidden;
+}
+.pfpBig img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.modal.open .pfpBig {
+    animation: pfpReveal 0.8s ease forwards 0.3s;
+}
+@keyframes pfpReveal {
+    from { filter: grayscale(100%) brightness(0.2); }
+    to { filter: grayscale(90%) brightness(0.65) contrast(1.2); }
+}
+
+.cardName {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #5a2020;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(107,0,0,0.5);
+}
+
+.cardMain { flex: 1; display: flex; flex-direction: column; }
+
+.cardHeader {
+    font-size: 8px;
+    color: #2a0000;
+    letter-spacing: 4px;
+    padding: 12px 25px;
+    border-bottom: 1px solid #1a0000;
+    background: #010000;
+    font-family: 'Share Tech Mono', monospace;
+    animation: headerBlink 5s step-end infinite;
+}
+@keyframes headerBlink {
+    0%,88%,100%{ opacity:1; }
+    89%,93%{ opacity:0.2; }
+}
+
+.cardStatus {
+    flex: 1;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 2;
+    padding: 28px 25px;
+    color: #6a4040;
+    background: #030000;
+    letter-spacing: 1px;
+}
+.cardStatus::after {
+    content: "█";
+    color: var(--blood);
+    animation: blink 0.8s step-end infinite;
+    font-style: normal;
+    font-size: 10px;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+.cardActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid #1a0000;
+}
+.pill {
+    padding: 14px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 4px;
+    color: #2a0000;
+    text-decoration: none;
+    border-right: 1px solid #1a0000;
+    text-align: center;
+    background: #010000;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+.pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--blood);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    z-index: 0;
+}
+.pill:hover::before { transform: scaleY(1); }
+.pill:hover { color: #fff; text-shadow: 0 0 6px rgba(255,200,200,0.3); }
+.pill span { position: relative; z-index: 1; }
+
+/* === AMBIENT PARTICLES === */
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 7; }
+
+/* === CURSOR TRAIL === */
+.trail {
+    position: fixed;
+    top: 0; left: 0;
+    width: 3px; height: 3px;
+    background: var(--blood);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99990;
+    animation: trailFade 0.9s ease-out forwards;
+    box-shadow: 0 0 4px var(--blood);
+    will-change: opacity, transform;
+}
+@keyframes trailFade {
+    0%  { opacity: 0.7; transform: translate(var(--x), var(--y)) scale(1.5); }
+    100%{ opacity: 0; transform: translate(var(--x), calc(var(--y) + 20px)) scale(0); }
+}
+
+/* === HEARTBEAT LINE === */
+#heartbeat {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* === GLITCH OVERLAY (rare) === */
+#glitchOverlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,0,0,0.03) 0px,
+        rgba(255,0,0,0.03) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- Scanlines -->
+<div id="scanlines"></div>
+
+<!-- Glitch overlay -->
+<div id="glitchOverlay"></div>
+
+<!-- Blood drips top -->
+<div id="drips"></div>
+
+<!-- Heartbeat SVG -->
+<svg id="heartbeat" width="300" height="30" viewBox="0 0 300 30">
+    <polyline points="0,15 40,15 50,5 60,25 70,3 80,27 90,15 150,15 160,5 170,25 180,3 190,27 200,15 300,15"
+        stroke="#6b0000" stroke-width="1" fill="none"
+        stroke-dasharray="400" stroke-dashoffset="400">
+        <animate attributeName="stroke-dashoffset" values="400;0;0;400" dur="4s" repeatCount="indefinite" keyTimes="0;0.4;0.8;1"/>
+    </polyline>
+</svg>
+
+<!-- Enter gate -->
+<div id="enterGate">
+    <div class="gate-sigil">ℭ</div>
+    <div id="enterText">ENTER IF YOU DARE</div>
+    <div class="gate-sub">abandon all hope, ye who proceed</div>
+</div>
+
+<div id="mascot-wrap">
+    <img id="mascot" src="mascot_dangle.png" alt="">
+</div>
+<div id="mascot-shadow"></div>
+
+<div class="topLinks">
+    <a href="hoa.index.html" target="_blank">Archive</a>
+    <a href="https://t.me/breachings" target="_blank">Telegram</a>
+    <a href="https://doxbin.com/user/privateparty" target="_blank">Doxbin</a>
+</div>
+
+<header>
+    <div class="title">ℭ-oas</div>
+    <div class="subtitle">we do not condone violence</div>
+</header>
+
+<main class="layout">
+    <div class="rosterGrid" id="roster"></div>
+</main>
+
+<div class="modal" id="modal">
+    <div class="backdrop" id="modalBackdrop"></div>
+    <div class="card">
+        <div class="cardSidebar">
+            <div class="pfpBig" id="mPfp"></div>
+            <div class="cardName" id="mName"></div>
+        </div>
+        <div class="cardMain">
+            <div class="cardHeader" id="cardHeaderTxt">SYS_BREACH // IDENTITY_EXPOSED</div>
+            <div class="cardStatus" id="mStatus"></div>
+            <div class="cardActions" id="actions"></div>
+        </div>
+    </div>
+</div>
+
+<canvas id="particles"></canvas>
+
+<audio id="ambience" loop>
+    <source src="viLe.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// === BLOOD DRIPS ===
+const dripsEl = document.getElementById("drips");
+for(let i = 0; i < 30; i++){
+    const d = document.createElement("div");
+    d.className = "drip";
+    const h = 20 + Math.random() * 60;
+    const dur = (2 + Math.random() * 4).toFixed(1) + "s";
+    const delay = (Math.random() * 8).toFixed(1) + "s";
+    d.style.setProperty("--h", h + "px");
+    d.style.setProperty("--dur", dur);
+    d.style.setProperty("--delay", delay);
+    dripsEl.appendChild(d);
+}
+
+// === CURSOR ===
+const cursor = document.getElementById("cursor");
+const cursorDot = document.getElementById("cursor-dot");
+let mx = 0, my = 0;
+document.addEventListener("mousemove", e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + "px";
+    cursor.style.top = my + "px";
+    cursorDot.style.left = mx + "px";
+    cursorDot.style.top = my + "px";
+});
+
+// === PARTICLES (floating ash/embers) ===
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+const particles = Array.from({length:60}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.2 + 0.2,
+    dx: (Math.random() - 0.5) * 0.3,
+    dy: -(Math.random() * 0.4 + 0.1),
+    opacity: Math.random() * 0.4 + 0.05,
+    life: Math.random()
+}));
+
+function animParticles(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+        p.x += p.dx + Math.sin(p.life * 3) * 0.2;
+        p.y += p.dy;
+        p.life += 0.005;
+        if(p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+        const flicker = 0.5 + 0.5 * Math.sin(p.life * 7);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${80 + Math.floor(flicker*50)},${Math.floor(flicker*10)},0,${p.opacity * flicker})`;
+        ctx.fill();
+    });
+    requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// === RARE GLITCH ===
+const glitch = document.getElementById("glitchOverlay");
+function triggerGlitch(){
+    glitch.style.opacity = "1";
+    document.body.style.transform = `translateX(${(Math.random()-0.5)*4}px)`;
+    setTimeout(()=>{
+        glitch.style.opacity = "0";
+        document.body.style.transform = "none";
+    }, 80 + Math.random() * 100);
+    setTimeout(triggerGlitch, 5000 + Math.random() * 15000);
+}
+setTimeout(triggerGlitch, 3000);
+
+// === MEMBERS ===
+// For img: use a local filename like "luci.jpg" OR any full image URL
+// Examples: "https://i.imgur.com/XXXXX.jpg"  |  "https://cdn.discordapp.com/avatars/..."
+const members = [
+    {
+        name: "LUCI",
+        img: "luci.jpg",              // <-- paste URL or filename here
+        status: "i'd rather be the villain in your story than a witness to your atrophy",
+        telegram: "https://t.me/disease"
+    },
+    {
+        name: "ABEL",
+        img: "abel.jpg",              // <-- paste URL or filename here
+        status: "sometimes i touch weep",
+        telegram: "https://t.me/abelfh",
+        doxbin: "https://doxbin.com/user/draculea"
+    },
+    {
+        name: "GELD",
+        img: "geld.jpg",              // <-- paste URL or filename here
+        status: "silence is golden",
+        telegram: "https://t.me/geld",
+        doxbin: "https://doxbin.com/user/geld"
+    },
+    {
+        name: "DIABLO",
+        img: "diablo.jpg",            // <-- paste URL or filename here
+        status: "The scarlet bloom flowers once more",
+        telegram: "https://t.me/temp8193",
+        doxbin: "https://doxbin.com/user/diablo"
+    }
+];
+
+const roster = document.getElementById("roster");
+const modal = document.getElementById("modal");
+const statusBox = document.getElementById("mStatus");
+let timer = null;
+
+members.forEach(m => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.innerHTML = `
+        <div class="pfp">
+            <img src="${m.img}" alt="${m.name}" onerror="this.style.opacity='0'">
+        </div>
+        <div class="name">${m.name}</div>`;
+    tile.addEventListener("click", () => showProfile(m));
+    roster.appendChild(tile);
+});
+
+const headers = ["SYS_BREACH // IDENTITY_EXPOSED","SOUL_INDEXED // DATA_EXTRACTED","FLESH_LOGGED // PRESENCE_DETECTED","NODE_CONDEMNED // SESSION_ACTIVE"];
+
+function showProfile(m) {
+    if(timer) clearTimeout(timer);
+    modal.classList.add("open");
+    document.getElementById("mPfp").innerHTML = `<img src="${m.img}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.opacity='0'">`;
+    document.getElementById("mName").textContent = m.name;
+    document.getElementById("cardHeaderTxt").textContent = headers[Math.floor(Math.random()*headers.length)];
+    document.getElementById("actions").innerHTML = "";
+    statusBox.textContent = "";
+    let i = 0;
+    function typeChar(){
+        if(i < m.status.length){
+            statusBox.textContent += m.status[i++];
+            let delay = Math.random()*50 + 35;
+            if(m.status[i-1]===" ") delay += 60;
+            timer = setTimeout(typeChar, delay);
+        }
+    }
+    typeChar();
+    if(m.telegram) addBtn("TELEGRAM", m.telegram);
+    if(m.doxbin) addBtn("DOXBIN", m.doxbin);
+}
+
+function addBtn(txt, url){
+    const a = document.createElement("a");
+    a.className = "pill";
+    a.href = url; a.target = "_blank";
+    a.innerHTML = `<span>${txt}</span>`;
+    document.getElementById("actions").appendChild(a);
+}
+
+function closePop(){
+    modal.classList.remove("open");
+    if(timer) clearTimeout(timer);
+}
+document.getElementById("modalBackdrop").addEventListener("click", closePop);
+
+// === ENTER GATE ===
+document.getElementById("enterText").addEventListener("click", e => {
+    e.stopPropagation();
+    document.getElementById("enterGate").classList.add("fadeOut");
+    const audio = document.getElementById("ambience");
+    audio.volume = 0;
+    audio.play().then(()=>{
+        let vol = 0;
+        const fi = setInterval(()=>{
+            if(vol < 0.18){ vol += 0.008; audio.volume = Math.min(vol, 0.18); }
+            else clearInterval(fi);
+        }, 60);
+    }).catch(()=>{});
+});
+
+// === CURSOR TRAIL ===
+let lastTrail = 0;
+document.addEventListener("mousemove", e => {
+    const now = performance.now();
+    if(now - lastTrail < 30) return;
+    lastTrail = now;
+    requestAnimationFrame(()=>{
+        const t = document.createElement("div");
+        t.className = "trail";
+        t.style.setProperty("--x", e.clientX + "px");
+        t.style.setProperty("--y", e.clientY + "px");
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(), 900);
+    });
+});
+
+// === SECURITY ===
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+    if(e.key==="F12"||(e.ctrlKey&&e.shiftKey&&["I","J","C"].includes(e.key))||(e.ctrlKey&&e.key==="u")) e.preventDefault();
+});
+
+// === KONAMI / VOID EASTER EGG ===
+let keys = "";
+document.addEventListener("keydown", e => {
+    keys += e.key.toLowerCase();
+    if(keys.length > 10) keys = keys.slice(-10);
+    if(keys.includes("void")){
+        document.body.style.filter = "invert(1) hue-rotate(180deg)";
+        setTimeout(()=>document.body.style.filter="none", 200);
+        keys="";
+    }
+});
+
+// === OCCASIONAL CREAK ===
+const mascotEl = document.getElementById("mascot");
+function triggerCreak(){
+    mascotEl.classList.add("creak");
+    setTimeout(()=> mascotEl.classList.remove("creak"), 1300);
+    setTimeout(triggerCreak, 8000 + Math.random() * 20000);
+}
+setTimeout(triggerCreak, 5000 + Math.random() * 10000);
+
+console.log("%c[ℭ-oas] you were warned.", "color:#6b0000; font-family:'Courier New',monospace; font-size:12px;");
+</script>
+</body>
+</html>
