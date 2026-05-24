@@ -233,7 +233,7 @@ body::after {
 /* === MASCOT (DANGLING FIGURE) === */
 #mascot-wrap {
     position: fixed;
-    top: -60px;
+    top: 0;
     right: 12%;
     width: 520px;
     height: auto;
@@ -242,6 +242,8 @@ body::after {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: transparent;
+    mix-blend-mode: screen;
 }
 
 /* The rope anchor line from top of screen */
@@ -717,7 +719,7 @@ header::after {
 </div>
 
 <div id="mascot-wrap">
-    <img id="mascot" src="mascot_dangle.png" alt="">
+    <img id="mascot" src="mascot_dangle.png" alt="" style="background:transparent;">
 </div>
 <div id="mascot-light"></div>
 
