@@ -233,7 +233,7 @@ body::after {
 /* === MASCOT (DANGLING FIGURE) === */
 #mascot-wrap {
     position: fixed;
-    top: 0;
+    top: -60px;
     right: 12%;
     width: 520px;
     height: auto;
@@ -242,7 +242,6 @@ body::after {
     display: flex;
     flex-direction: column;
     align-items: center;
-    mix-blend-mode: screen;
 }
 
 /* The rope anchor line from top of screen */
@@ -258,11 +257,10 @@ body::after {
     width: 480px;
     height: auto;
     display: block;
-    opacity: 0.88;
-    filter: brightness(1.5) contrast(1.1) grayscale(20%);
+    opacity: 1;
+    filter: brightness(1.1) contrast(1.15);
     transform-origin: top center;
     will-change: transform;
-    mix-blend-mode: screen;
 }
 
 /* Soft light that follows the dangling figure */
