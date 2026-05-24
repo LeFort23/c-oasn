@@ -937,53 +937,33 @@ document.addEventListener("keydown", e => {
     }
 });
 
-// === PHYSICS PENDULUM ===
+// === PENDULUM (pure sin — constant speed, never slows) ===
 (function() {
     const mascotEl = document.getElementById("mascot");
     const lightEl  = document.getElementById("mascot-light");
+    const wrap     = document.getElementById("mascot-wrap");
 
-    // Pendulum state
-    let angle    = 0.08;   // radians, starting angle
-    let velocity = 0;
-    const gravity   = 0.0018;  // gravitational constant (tuned for feel)
-    const length    = 1;       // normalized
-    const damping   = 0.998;   // very light air resistance, stays swinging forever
-    const maxAngleDeg = 6;     // max swing degrees
-    const maxAngleRad = maxAngleDeg * Math.PI / 180;
+    const amplitudeDeg = 5;      // max swing angle in degrees
+    const periodMs     = 3800;   // full swing cycle in ms (tweak for speed feel)
 
-    // mascot-wrap right edge + width to compute absolute X of figure bottom
-    const wrap = document.getElementById("mascot-wrap");
+    function tick(ts) {
+        // Pure sine wave — constant amplitude forever
+        const angle    = amplitudeDeg * Math.sin((2 * Math.PI * ts) / periodMs);
+        const angleRad = angle * (Math.PI / 180);
 
-    function tick() {
-        // Simple pendulum: angular acceleration = -(g/L) * sin(angle)
-        const accel = -(gravity / length) * Math.sin(angle);
-        velocity = (velocity + accel) * damping;
-        angle += velocity;
+        mascotEl.style.transform = `rotate(${angle}deg)`;
 
-        // Clamp so it never swings wildly
-        if (Math.abs(angle) > maxAngleRad) {
-            angle = Math.sign(angle) * maxAngleRad;
-            velocity *= -0.3;
-        }
-
-        // Apply rotation
-        const deg = angle * (180 / Math.PI);
-        mascotEl.style.transform = `rotate(${deg}deg)`;
-
-        // Move light: figure is ~380px wide, pivot at top center of wrap
-        // Bottom of figure swings left/right based on angle
+        // Light follows bottom of figure
         const wrapRect = wrap.getBoundingClientRect();
         const pivotX   = wrapRect.left + wrapRect.width / 2;
         const figH     = mascotEl.offsetHeight;
-        const lightX   = pivotX + Math.sin(angle) * figH;
+        const lightX   = pivotX + Math.sin(angleRad) * figH * 0.85;
         lightEl.style.left = lightX + "px";
 
         requestAnimationFrame(tick);
     }
 
-    // Give a gentle initial push so it starts swinging naturally
-    velocity = 0.004;
-    tick();
+    requestAnimationFrame(tick);
 })();
 
 console.log("%c[ℭ-oas] you were warned.", "color:#888; font-family:'Courier New',monospace; font-size:12px;");
