@@ -234,42 +234,25 @@ body::after {
     opacity: 0.85;
     filter: brightness(1.4) contrast(1.05) grayscale(20%);
     transform-origin: top center;
-    animation: dangle 4s ease-in-out infinite alternate;
     will-change: transform;
-    image-rendering: crisp-edges;
 }
 
-@keyframes dangle {
-    0%   { transform: rotate(-5deg); }
-    100% { transform: rotate(5deg); }
-}
-
-/* Occasional creak — slightly faster swing burst */
-#mascot.creak {
-    animation: dangle-creak 0.4s ease-in-out 3;
-}
-@keyframes dangle-creak {
-    0%   { transform: rotate(-9deg); }
-    50%  { transform: rotate(9deg); }
-    100% { transform: rotate(-9deg); }
-}
-
-/* Red shadow pool beneath */
-#mascot-shadow {
+/* Soft light that follows the dangling figure */
+#mascot-light {
     position: fixed;
-    bottom: 0;
-    right: 10%;
-    width: 380px;
-    height: 60px;
-    background: radial-gradient(ellipse at center, rgba(80,80,80,0.25) 0%, transparent 70%);
+    bottom: 30px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center,
+        rgba(255,255,255,0.12) 0%,
+        rgba(255,255,255,0.05) 35%,
+        transparent 70%);
     pointer-events: none;
     z-index: 5;
-    animation: shadowPulse 3.2s ease-in-out infinite alternate;
-    transform-origin: center;
-}
-@keyframes shadowPulse {
-    0%   { transform: scaleX(0.85); opacity: 0.5; }
-    100% { transform: scaleX(1.1);  opacity: 0.9; }
+    transform: translateX(-50%);
+    filter: blur(8px);
+    will-change: left;
 }
 
 /* === HEADER === */
@@ -702,7 +685,7 @@ header::after {
 <div id="mascot-wrap">
     <img id="mascot" src="mascot_dangle.png" alt="">
 </div>
-<div id="mascot-shadow"></div>
+<div id="mascot-light"></div>
 
 <div class="topLinks">
     <a href="hoa.index.html" target="_blank">Archive</a>
@@ -954,14 +937,54 @@ document.addEventListener("keydown", e => {
     }
 });
 
-// === OCCASIONAL CREAK ===
-const mascotEl = document.getElementById("mascot");
-function triggerCreak(){
-    mascotEl.classList.add("creak");
-    setTimeout(()=> mascotEl.classList.remove("creak"), 1300);
-    setTimeout(triggerCreak, 8000 + Math.random() * 20000);
-}
-setTimeout(triggerCreak, 5000 + Math.random() * 10000);
+// === PHYSICS PENDULUM ===
+(function() {
+    const mascotEl = document.getElementById("mascot");
+    const lightEl  = document.getElementById("mascot-light");
+
+    // Pendulum state
+    let angle    = 0.08;   // radians, starting angle
+    let velocity = 0;
+    const gravity   = 0.0018;  // gravitational constant (tuned for feel)
+    const length    = 1;       // normalized
+    const damping   = 0.998;   // very light air resistance, stays swinging forever
+    const maxAngleDeg = 6;     // max swing degrees
+    const maxAngleRad = maxAngleDeg * Math.PI / 180;
+
+    // mascot-wrap right edge + width to compute absolute X of figure bottom
+    const wrap = document.getElementById("mascot-wrap");
+
+    function tick() {
+        // Simple pendulum: angular acceleration = -(g/L) * sin(angle)
+        const accel = -(gravity / length) * Math.sin(angle);
+        velocity = (velocity + accel) * damping;
+        angle += velocity;
+
+        // Clamp so it never swings wildly
+        if (Math.abs(angle) > maxAngleRad) {
+            angle = Math.sign(angle) * maxAngleRad;
+            velocity *= -0.3;
+        }
+
+        // Apply rotation
+        const deg = angle * (180 / Math.PI);
+        mascotEl.style.transform = `rotate(${deg}deg)`;
+
+        // Move light: figure is ~380px wide, pivot at top center of wrap
+        // Bottom of figure swings left/right based on angle
+        const wrapRect = wrap.getBoundingClientRect();
+        const pivotX   = wrapRect.left + wrapRect.width / 2;
+        const figH     = mascotEl.offsetHeight;
+        const lightX   = pivotX + Math.sin(angle) * figH;
+        lightEl.style.left = lightX + "px";
+
+        requestAnimationFrame(tick);
+    }
+
+    // Give a gentle initial push so it starts swinging naturally
+    velocity = 0.004;
+    tick();
+})();
 
 console.log("%c[ℭ-oas] you were warned.", "color:#888; font-family:'Courier New',monospace; font-size:12px;");
 </script>
