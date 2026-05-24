@@ -12,15 +12,15 @@
 }
 
 :root {
-    --blood: #6b0000;
-    --deep-blood: #3a0000;
-    --ash: #b0a090;
-    --bone: #d4c9b8;
+    --blood: #888;
+    --deep-blood: #555;
+    --ash: #ccc;
+    --bone: #e8e8e8;
     --void: #000000;
-    --fog: #1a1510;
-    --rot: #2a1f10;
-    --glow-red: rgba(107, 0, 0, 0.6);
-    --glow-amber: rgba(180, 100, 20, 0.3);
+    --fog: #111;
+    --rot: #1a1a1a;
+    --glow-red: rgba(200, 200, 200, 0.4);
+    --glow-amber: rgba(180, 180, 180, 0.2);
 }
 
 html, body {
@@ -38,7 +38,7 @@ html, body {
 #cursor {
     position: fixed;
     width: 12px; height: 12px;
-    border: 1px solid var(--blood);
+    border: 1px solid #666;
     border-radius: 50%;
     pointer-events: none;
     z-index: 99999;
@@ -129,7 +129,7 @@ body::after {
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    background: linear-gradient(to bottom, var(--blood), transparent);
+    background: linear-gradient(to bottom, #555, transparent);
     animation: dripDown var(--dur) var(--delay) ease-in infinite;
 }
 @keyframes dripDown {
@@ -155,14 +155,14 @@ body::after {
 .gate-sigil {
     font-family: 'Cinzel Decorative', serif;
     font-size: 64px;
-    color: var(--blood);
-    text-shadow: 0 0 40px var(--glow-red), 0 0 80px rgba(107,0,0,0.3);
+    color: #aaa;
+    text-shadow: 0 0 40px rgba(200,200,200,0.5), 0 0 80px rgba(255,255,255,0.2);
     animation: sigilPulse 4s ease-in-out infinite;
     line-height: 1;
 }
 @keyframes sigilPulse {
-    0%,100% { opacity: 0.4; text-shadow: 0 0 20px var(--glow-red); transform: scale(1); }
-    50% { opacity: 1; text-shadow: 0 0 60px var(--glow-red), 0 0 100px rgba(107,0,0,0.4); transform: scale(1.03); }
+    0%,100% { opacity: 0.4; text-shadow: 0 0 20px rgba(200,200,200,0.4); transform: scale(1); }
+    50% { opacity: 1; text-shadow: 0 0 60px rgba(255,255,255,0.5), 0 0 100px rgba(255,255,255,0.2); transform: scale(1.03); }
 }
 
 #enterText {
@@ -174,7 +174,7 @@ body::after {
     transition: all 0.5s ease;
     text-transform: uppercase;
     padding: 16px 30px;
-    border: 1px solid #1a0000;
+    border: 1px solid #222;
     position: relative;
     overflow: hidden;
 }
@@ -196,7 +196,7 @@ body::after {
     font-family: 'IM Fell English', serif;
     font-style: italic;
     font-size: 11px;
-    color: #2a0000;
+    color: #333;
     letter-spacing: 3px;
     animation: textPulse 5s ease-in-out infinite 1s;
 }
@@ -208,8 +208,8 @@ body::after {
 #mascot-wrap {
     position: fixed;
     top: 0;
-    right: 10%;
-    width: 260px;
+    right: 5%;
+    width: 400px;
     height: 100vh;
     pointer-events: none;
     z-index: 6;
@@ -228,23 +228,20 @@ body::after {
 }
 
 #mascot {
-    width: 220px;
+    width: 380px;
     height: auto;
     display: block;
-    opacity: 0.55;
-    filter: brightness(0.9) contrast(1.1);
+    opacity: 0.85;
+    filter: brightness(1.4) contrast(1.05) grayscale(20%);
     transform-origin: top center;
-    animation: dangle 3.2s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
-    /* subtle flicker */
+    animation: dangle 4s ease-in-out infinite alternate;
     will-change: transform;
+    image-rendering: crisp-edges;
 }
 
 @keyframes dangle {
-    0%   { transform: rotate(-6deg); }
-    25%  { transform: rotate(-3deg); }
-    50%  { transform: rotate(0deg); }
-    75%  { transform: rotate(3deg); }
-    100% { transform: rotate(6deg); }
+    0%   { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
 }
 
 /* Occasional creak — slightly faster swing burst */
@@ -262,9 +259,9 @@ body::after {
     position: fixed;
     bottom: 0;
     right: 10%;
-    width: 220px;
+    width: 380px;
     height: 60px;
-    background: radial-gradient(ellipse at center, rgba(80,0,0,0.35) 0%, transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(80,80,80,0.25) 0%, transparent 70%);
     pointer-events: none;
     z-index: 5;
     animation: shadowPulse 3.2s ease-in-out infinite alternate;
@@ -288,29 +285,29 @@ header {
     font-size: 38px;
     font-weight: 900;
     letter-spacing: 6px;
-    color: #4a0000;
-    text-shadow: 0 0 30px rgba(107,0,0,0.8), 0 0 60px rgba(107,0,0,0.3), 2px 2px 0 #000;
+    color: #aaa;
+    text-shadow: 0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.1), 2px 2px 0 #000;
     animation: titleGlitch 8s steps(1) infinite;
     text-transform: uppercase;
 }
 @keyframes titleGlitch {
     0%,92%,100% {
-        text-shadow: 0 0 30px rgba(107,0,0,0.8), 0 0 60px rgba(107,0,0,0.3);
+        text-shadow: 0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.1);
         transform: none;
         filter: none;
     }
     93% {
-        text-shadow: -2px 0 #f00, 2px 0 #00f;
+        text-shadow: -2px 0 #fff, 2px 0 #888;
         transform: translateX(-2px);
         filter: blur(0.5px);
     }
     94% {
-        text-shadow: 2px 0 #f00, -2px 0 #0f0;
+        text-shadow: 2px 0 #fff, -2px 0 #aaa;
         transform: translateX(2px);
     }
     95% {
         transform: none;
-        text-shadow: 0 0 30px rgba(107,0,0,0.8);
+        text-shadow: 0 0 30px rgba(255,255,255,0.3);
     }
     96% {
         transform: translateX(-1px) skewX(-5deg);
@@ -330,7 +327,7 @@ header {
 }
 @keyframes subtitlePulse {
     0%,100%{ opacity: 0.4; }
-    50%{ opacity: 0.9; color: #5a3030; }
+    50%{ opacity: 0.9; color: #aaa; }
 }
 
 /* decorative line */
@@ -338,7 +335,7 @@ header::after {
     content: "— ✦ —";
     display: block;
     font-size: 12px;
-    color: #2a0000;
+    color: #333;
     letter-spacing: 8px;
     margin-top: 16px;
     opacity: 0.6;
@@ -349,31 +346,32 @@ header::after {
     position: fixed;
     top: 28px; right: 32px;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     text-align: right;
     z-index: 200;
 }
 .topLinks a {
     display: block;
-    color: #3a2020;
+    color: #888;
     text-decoration: none;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     transition: all 0.4s ease;
     position: relative;
+    padding: 4px 0;
 }
 .topLinks a::before {
     content: "▸ ";
     opacity: 0;
     transition: opacity 0.3s ease;
-    color: var(--blood);
+    color: #fff;
 }
 .topLinks a:hover::before { opacity: 1; }
 .topLinks a:hover {
-    color: #cc2200;
-    text-shadow: 0 0 10px rgba(200,30,0,0.5);
-    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 14px rgba(255,255,255,0.5);
+    letter-spacing: 6px;
 }
 
 /* === LAYOUT + ROSTER === */
@@ -399,9 +397,9 @@ header::after {
 
 .pfp {
     width: 65px; height: 65px;
-    border: 1px solid #1a0000;
+    border: 1px solid #222;
     background: #000;
-    filter: grayscale(100%) brightness(0.5) contrast(1.2);
+    filter: grayscale(100%) brightness(0.75) contrast(1.1);
     transition: all 0.5s ease;
     position: relative;
     overflow: hidden;
@@ -414,9 +412,9 @@ header::after {
 }
 /* Red glow on hover */
 .tile:hover .pfp {
-    border-color: var(--blood);
-    filter: grayscale(80%) brightness(0.9) contrast(1.1) sepia(30%);
-    box-shadow: 0 0 20px rgba(107,0,0,0.7), 0 0 40px rgba(107,0,0,0.3);
+    border-color: #888;
+    filter: grayscale(0%) brightness(1.1) contrast(1.0);
+    box-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(255,255,255,0.1);
 }
 
 /* scratch effect over pfp */
@@ -436,15 +434,15 @@ header::after {
 
 .name {
     margin-top: 8px;
-    font-size: 8px;
-    letter-spacing: 3px;
-    color: #2a1515;
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #444;
     transition: 0.4s;
     font-family: 'Share Tech Mono', monospace;
 }
 .tile:hover .name {
-    color: #cc3300;
-    text-shadow: 0 0 8px rgba(180,30,0,0.4);
+    color: #ddd;
+    text-shadow: 0 0 8px rgba(255,255,255,0.2);
 }
 
 /* === MODAL === */
@@ -473,8 +471,8 @@ header::after {
 .card {
     position: relative;
     width: 560px;
-    background: #030000;
-    border: 1px solid #2a0000;
+    background: #080808;
+    border: 1px solid #333;
     display: flex;
     min-height: 280px;
     opacity: 0;
@@ -491,7 +489,7 @@ header::after {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(to right, transparent, var(--blood), var(--deep-blood), var(--blood), transparent);
+    background: linear-gradient(to right, transparent, #777, #aaa, #777, transparent);
     z-index: 5;
     animation: redLinePulse 3s ease-in-out infinite;
 }
@@ -503,10 +501,10 @@ header::after {
 .cardSidebar {
     width: 190px;
     padding: 35px 25px;
-    border-right: 1px solid #1a0000;
+    border-right: 1px solid #222;
     display: flex;
     flex-direction: column;
-    background: #020000;
+    background: #060606;
     align-items: center;
     position: relative;
 }
@@ -522,7 +520,7 @@ header::after {
 .pfpBig {
     width: 120px; height: 120px;
     margin-bottom: 18px;
-    border: 1px solid #2a0000;
+    border: 1px solid #333;
     background: #000;
     filter: grayscale(90%) brightness(0.65) contrast(1.2);
     box-shadow: 0 0 25px rgba(107,0,0,0.3);
@@ -546,20 +544,20 @@ header::after {
     font-family: 'Cinzel Decorative', serif;
     font-size: 13px;
     letter-spacing: 3px;
-    color: #5a2020;
+    color: #999;
     text-transform: uppercase;
-    text-shadow: 0 0 15px rgba(107,0,0,0.5);
+    text-shadow: 0 0 15px rgba(255,255,255,0.2);
 }
 
 .cardMain { flex: 1; display: flex; flex-direction: column; }
 
 .cardHeader {
     font-size: 8px;
-    color: #2a0000;
+    color: #444;
     letter-spacing: 4px;
     padding: 12px 25px;
-    border-bottom: 1px solid #1a0000;
-    background: #010000;
+    border-bottom: 1px solid #222;
+    background: #060606;
     font-family: 'Share Tech Mono', monospace;
     animation: headerBlink 5s step-end infinite;
 }
@@ -575,13 +573,13 @@ header::after {
     font-size: 13px;
     line-height: 2;
     padding: 28px 25px;
-    color: #6a4040;
-    background: #030000;
+    color: #888;
+    background: #080808;
     letter-spacing: 1px;
 }
 .cardStatus::after {
     content: "█";
-    color: var(--blood);
+    color: #aaa;
     animation: blink 0.8s step-end infinite;
     font-style: normal;
     font-size: 10px;
@@ -591,7 +589,7 @@ header::after {
 .cardActions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border-top: 1px solid #1a0000;
+    border-top: 1px solid #222;
 }
 .pill {
     padding: 14px 10px;
@@ -600,9 +598,9 @@ header::after {
     letter-spacing: 4px;
     color: #2a0000;
     text-decoration: none;
-    border-right: 1px solid #1a0000;
+    border-right: 1px solid #222;
     text-align: center;
-    background: #010000;
+    background: #060606;
     transition: all 0.4s ease;
     position: relative;
     overflow: hidden;
@@ -611,7 +609,7 @@ header::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--blood);
+    background: #333;
     transform: scaleY(0);
     transform-origin: bottom;
     transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
@@ -629,12 +627,12 @@ header::after {
     position: fixed;
     top: 0; left: 0;
     width: 3px; height: 3px;
-    background: var(--blood);
+    background: #888;
     border-radius: 50%;
     pointer-events: none;
     z-index: 99990;
     animation: trailFade 0.9s ease-out forwards;
-    box-shadow: 0 0 4px var(--blood);
+    box-shadow: 0 0 4px #666;
     will-change: opacity, transform;
 }
 @keyframes trailFade {
@@ -714,7 +712,7 @@ header::after {
 
 <header>
     <div class="title">ℭ-oas</div>
-    <div class="subtitle">we do not condone violence</div>
+    <div class="subtitle">DON'T BETRAY GOD</div>
 </header>
 
 <main class="layout">
@@ -799,7 +797,7 @@ function animParticles(){
         const flicker = 0.5 + 0.5 * Math.sin(p.life * 7);
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${80 + Math.floor(flicker*50)},${Math.floor(flicker*10)},0,${p.opacity * flicker})`;
+        ctx.fillStyle = `rgba(${160 + Math.floor(flicker*80)},${160 + Math.floor(flicker*80)},${160 + Math.floor(flicker*80)},${p.opacity * flicker * 0.5})`;
         ctx.fill();
     });
     requestAnimationFrame(animParticles);
@@ -824,27 +822,27 @@ setTimeout(triggerGlitch, 3000);
 // Examples: "https://i.imgur.com/XXXXX.jpg"  |  "https://cdn.discordapp.com/avatars/..."
 const members = [
     {
-        name: "LUCI",
+        name: "OPPRESSIONIST",
         img: "luci.jpg",              // <-- paste URL or filename here
         status: "i'd rather be the villain in your story than a witness to your atrophy",
         telegram: "https://t.me/disease"
     },
     {
-        name: "ABEL",
+        name: "HONORED",
         img: "abel.jpg",              // <-- paste URL or filename here
         status: "sometimes i touch weep",
         telegram: "https://t.me/abelfh",
         doxbin: "https://doxbin.com/user/draculea"
     },
     {
-        name: "GELD",
+        name: "REAPSED",
         img: "geld.jpg",              // <-- paste URL or filename here
         status: "silence is golden",
         telegram: "https://t.me/geld",
         doxbin: "https://doxbin.com/user/geld"
     },
     {
-        name: "DIABLO",
+        name: "VALENTINE",
         img: "diablo.jpg",            // <-- paste URL or filename here
         status: "The scarlet bloom flowers once more",
         telegram: "https://t.me/temp8193",
@@ -965,7 +963,7 @@ function triggerCreak(){
 }
 setTimeout(triggerCreak, 5000 + Math.random() * 10000);
 
-console.log("%c[ℭ-oas] you were warned.", "color:#6b0000; font-family:'Courier New',monospace; font-size:12px;");
+console.log("%c[ℭ-oas] you were warned.", "color:#888; font-family:'Courier New',monospace; font-size:12px;");
 </script>
 </body>
 </html>
