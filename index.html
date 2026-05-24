@@ -236,12 +236,13 @@ body::after {
     top: 0;
     right: 5%;
     width: 400px;
-    height: 100vh;
+    height: auto;
     pointer-events: none;
     z-index: 6;
     display: flex;
     flex-direction: column;
     align-items: center;
+    mix-blend-mode: screen;
 }
 
 /* The rope anchor line from top of screen */
@@ -257,10 +258,11 @@ body::after {
     width: 380px;
     height: auto;
     display: block;
-    opacity: 0.85;
-    filter: brightness(1.4) contrast(1.05) grayscale(20%);
+    opacity: 0.88;
+    filter: brightness(1.5) contrast(1.1) grayscale(20%);
     transform-origin: top center;
     will-change: transform;
+    mix-blend-mode: screen;
 }
 
 /* Soft light that follows the dangling figure */
